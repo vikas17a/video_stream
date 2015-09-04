@@ -1,6 +1,4 @@
-This software is under development - POC STATE
+#Video Stream Web Application
+POC
 
-#VLC Stream Web Application
 
-#To do list
-* Get VLC installed on server ```sudo yum -y install vlc```
