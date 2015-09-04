@@ -1,11 +1,12 @@
 #!/bin/bash
 
-#Script contains initial check for the web application
 LOGFILE="../stream.log"
-LINUX=$(awk '/^LINUX/{print $3}' ../.config/vlc.conf)
-CODEC=$2
+LINUX=$(awk '/^LINUX/{print $3}' ./.config/vlc.conf)
+CODEC=$(awk '/^CODEC/{print $3}' ./.config/vlc.conf)
+PORT=$(awk '/^PORT/{print $3}' ./.config/vlc.conf)
 INPUTSTREAM=$1
-PORT=$3
+IP=$2
+
 case $LINUX in
   "centos") vlc=$(rpm -qa 'vlc')
             if [ -z $vlc ]; then
@@ -19,7 +20,7 @@ case $LINUX in
 esac
 
 case $CODEC in
-  "default" ) sout="#transcode{vcodec=h264,vb=800,width=640,height=480,acodec=mp3,ab=128,channels=2,samplerate=44100}:http{mux=ffmpeg{mux=flv},dst=:$PORT/}"
+  "default" ) sout=":sout=#transcode{vcodec=VP80,vb=2000,acodec=vorb,ab=128,channels=2,samplerate=44100}:udp{dst=$IP:$PORT} :sout-keep"
               ;;
   *)          echo "Codec is not supported for now try default codec"
               exit 1
@@ -27,4 +28,6 @@ case $CODEC in
 esac
 
 #Starting vlc stream
-vlc -vvv $INPUTSTREAM --sout \'$sout\' &>> $LOGFILE &
+vlc $INPUTSTREAM --sout $sout &> $LOGFILE &
+
+# USING UDP FOR VIDEO STREAMING #
